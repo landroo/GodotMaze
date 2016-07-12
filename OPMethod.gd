@@ -8,6 +8,8 @@ var cellData = []
 var path = []
 
 func _init(sx, sy):
+	randomize()
+	
 	sizeX = sx
 	sizeY = sy
 	
@@ -132,4 +134,155 @@ func copyCell(act):
 	cell[2] = act[2]
 	
 	return cell
+
+#
+func solveMaze(sx, sy, dx, dy):
+	var mazePath = []
+	mazePath.resize(sizeX)
+	
+	var destOK = false
+	
+	var calcPos = []
+	calcPos.resize(2)
+	
+	var cellPos = []
+	cellPos.resize(2)
+	cellPos[0] = sx
+	cellPos[1] = sy
+	
+	var state = []
+	state.append(cellPos)
+	
+	var step = 0
+	
+	for i in range(sizeX):
+		var ar = []
+		ar.resize(sizeY)
+		mazePath[i] = ar
+		for j in range(sizeY):
+			mazePath[i][j] = -1
+	
+	mazePath[sx][sy] = step
+	
+	while(destOK == false && state.size() > 0):
+		step = step + 1
+		var nextState = []
+		
+		for i in range(state.size()):
+			
+			calcPos = state[i]
+			
+			# up
+			if(calcPos[1] > 0 && (mazePath[calcPos[0]][calcPos[1] - 1] == -1 && cellData[calcPos[0]][calcPos[1]] & 1) != 0):
+				mazePath[calcPos[0]][calcPos[1] - 1] = step
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = calcPos[0]
+				nextPos[1] = calcPos[1] - 1
+				nextState.append(nextPos)
+				
+				if(nextPos[0] == dx && nextPos[1] == dy):
+					destOK = true
+			
+			# left
+			if(calcPos[0] > 0 && mazePath[calcPos[0] - 1][calcPos[1]] == -1 && (cellData[calcPos[0]][calcPos[1]] & 2) != 0):
+				mazePath[calcPos[0] - 1][calcPos[1]] = step
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = calcPos[0] - 1
+				nextPos[1] = calcPos[1]
+				nextState.append(nextPos)
+				
+				if(nextPos[0] == dx && nextPos[1] == dy):
+					destOK = true
+			
+			# down
+			if(calcPos[1] < sizeY - 1 && mazePath[calcPos[0]][calcPos[1] + 1] == -1 && (cellData[calcPos[0]][calcPos[1] + 1] & 1) != 0):
+				mazePath[calcPos[0]][calcPos[1] + 1] = step
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = calcPos[0]
+				nextPos[1] = calcPos[1] + 1
+				nextState.append(nextPos)
+				
+				if(nextPos[0] == dx && nextPos[1] == dy):
+					destOK = true
+			
+			# rigth
+			if(calcPos[0] < sizeX - 1 && mazePath[calcPos[0] + 1][calcPos[1]] == -1 && (cellData[calcPos[0] + 1][calcPos[1]] & 2) != 0):
+				mazePath[calcPos[0] + 1][calcPos[1]] = step
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = calcPos[0] + 1
+				nextPos[1] = calcPos[1]
+				nextState.append(nextPos)
+				
+				if(nextPos[0] == dx && nextPos[1] == dy):
+					destOK = true
+				
+		state = nextState
+	
+	var tx = dx
+	var ty = dy
+	var ex = false
+	var path = []
+	
+	if(destOK != false):
+		mazePath[dx][dy] = step
+		
+		var nextPos = []
+		nextPos.resize(2)
+		nextPos[0] = tx
+		nextPos[1] = ty
+		path.append(nextPos)
+		
+		while(tx != sx || ty != sy):
+			step = mazePath[tx][ty]
+			ex = false
+			
+			#up
+			if(ty > 0 && ex == false && mazePath[tx][ty - 1] == step - 1 && (cellData[tx][ty] & 1) != 0):
+				ty = ty - 1
+				ex = true
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = tx
+				nextPos[1] = ty
+				path.append(nextPos)
+			
+			# left
+			if(tx > 0 && ex == false && mazePath[tx - 1][ty] == step - 1 && (cellData[tx][ty] & 2) != 0):
+				tx = tx - 1
+				ex = true
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = tx
+				nextPos[1] = ty
+				path.append(nextPos)
+			
+			#down
+			if(ty < sizeY - 1 && ex == false && mazePath[tx][ty + 1] == step - 1 && (cellData[tx][ty + 1] & 1) != 0):
+				ty = ty + 1
+				ex = true
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = tx
+				nextPos[1] = ty
+				path.append(nextPos)
+			
+			# right
+			if(tx < sizeX - 1 && ex == false && mazePath[tx + 1][ty] == step - 1 && (cellData[tx + 1][ty] & 2) != 0):
+				tx = tx + 1
+				ex = true
+				var nextPos = []
+				nextPos.resize(2)
+				nextPos[0] = tx
+				nextPos[1] = ty
+				path.append(nextPos)
+	
+	return path
+
+
+
+
 
