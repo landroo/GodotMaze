@@ -5,27 +5,24 @@ extends Node2D
 var op
 var data
 var path
-var size
+var size = 10
 var h
 var w
 
 func _ready():
-	size = 10
 	h = int(get_viewport().get_rect().size.height / size) - 1
 	w = int(get_viewport().get_rect().size.width / size) - 1
-	print(w)
-	print(h)
 	
-	var OPMethod = load("OPMethod.gd")
+	var OPMethod = load("res://scripts/OPMethod.gd")
 	op = OPMethod.new(w, h)
 	data = op.createMaze()
 	path = op.solveMaze(0, 0, w - 1, h - 1)
-	
+	print("line ready")
 
 func _draw():
 	drawMaze(data, w, h, size, size)
 	drawSolve(path, w, h, size, size)
-	print("draw")
+	print("line draw")
 
 func drawMaze(data, sizeX, sizeY, width, height):
 	var color = Color(1.0, 0.0, 0.0)
